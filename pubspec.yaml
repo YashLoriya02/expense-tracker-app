@@ -1,0 +1,83 @@
+name: expense_tracker_ai
+description: Advanced AI-powered expense management app
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State management
+  flutter_riverpod: ^3.1.0
+  riverpod_annotation: ^4.0.0
+  
+  # Local database - drift (type-safe SQLite)
+  drift: ^2.18.0
+  drift_flutter: ^0.2.1
+  sqlite3_flutter_libs: ^0.5.22
+  
+  # Navigation
+  go_router: ^17.2.3
+  
+  # UI
+  fl_chart: ^1.2.0
+  google_fonts: ^8.1.0
+  flutter_animate: ^4.5.0
+  lucide_icons: ^0.257.0
+  shimmer: ^3.0.0
+  
+  # AI & ML
+  google_mlkit_text_recognition: ^0.15.1   # Receipt OCR - free, on-device
+  google_mlkit_entity_extraction: ^0.15.3  # Extract amounts, dates from text
+  
+  # Camera & image
+  camera: ^0.12.0+1
+  image_picker: ^1.1.2
+  
+  # Utilities
+  intl: ^0.20.3
+  uuid: ^4.4.0
+  shared_preferences: ^2.5.5
+  local_auth: ^3.0.1   # Biometric
+  path_provider: ^2.1.5
+  path: ^1.9.1
+  
+  # Export
+  excel: ^4.0.6
+  share_plus: ^12.0.2
+
+  http: ^1.6.0
+  speech_to_text: ^7.4.0
+  cross_file: ^0.3.5+2
+  google_sign_in: ^7.2.0
+  
+  # Notifications
+  # flutter_local_notifications: ^20.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^2.4.11
+  drift_dev: ^2.18.0
+  riverpod_generator: ^4.0.0+1
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter:
+  uses-material-design: true
+  # assets:
+  #   - assets/images/
+  #   - assets/animations/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.webp"
+  min_sdk_android: 21
+  remove_alpha_ios: true
+
+  adaptive_icon_background: "#4F46E5"
+  adaptive_icon_foreground: "assets/icon/app_icon.webp"
