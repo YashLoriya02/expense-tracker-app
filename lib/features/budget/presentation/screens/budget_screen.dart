@@ -26,8 +26,6 @@ class BudgetScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('🎯', style: TextStyle(fontSize: 56)),
-                    const SizedBox(height: 16),
                     Text('No budgets yet',
                         style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 8),

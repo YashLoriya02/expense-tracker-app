@@ -20,8 +20,6 @@ class RecentTransactionsList extends ConsumerWidget {
         child: Center(
           child: Column(
             children: [
-              Text('💸', style: TextStyle(fontSize: 40)),
-              SizedBox(height: 12),
               Text('No transactions yet', style: TextStyle(fontSize: 15)),
               SizedBox(height: 4),
               Text('Tap + Add to record your first one', style: TextStyle(fontSize: 13, color: Colors.grey)),

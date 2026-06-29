@@ -4,6 +4,7 @@ import 'package:expense_tracker_ai/features/goals/presentation/screens/goals_scr
 import 'package:expense_tracker_ai/features/insights/presentation/screens/insights_screen.dart';
 import 'package:expense_tracker_ai/features/transactions/presentation/screens/add_transaction_screen.dart';
 import 'package:expense_tracker_ai/features/transactions/presentation/screens/transaction_detail_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
@@ -12,7 +13,10 @@ import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/transactions/presentation/screens/transactions_screen.dart';
 import '../../shared/widgets/main_shell.dart';
 
+final rootNavigatorKey = GlobalKey<NavigatorState>();
+
 final appRouter = GoRouter(
+  navigatorKey: rootNavigatorKey,
   initialLocation: '/',
   routes: [
     ShellRoute(

@@ -31,8 +31,6 @@ class GoalsScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('🎯', style: TextStyle(fontSize: 56)),
-                  const SizedBox(height: 16),
                   const Text('No goals yet',
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),

@@ -8,6 +8,9 @@
     <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.SEND_SMS"/>
 
     <application
         android:label="Expense Tracker"
@@ -43,6 +46,14 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2"/>
+
+        <receiver
+            android:name="com.shounakmulay.telephony.sms.IncomingSmsReceiver"
+            android:exported="true">
+        <intent-filter>
+            <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+        </intent-filter>
+</receiver>
 
     </application>
 
