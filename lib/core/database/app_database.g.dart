@@ -3226,6 +3226,353 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
   }
 }
 
+class $PendingNotificationsTable extends PendingNotifications
+    with TableInfo<$PendingNotificationsTable, PendingNotification> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PendingNotificationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      clientDefault: () => const Uuid().v4());
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+      'source', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('sms'));
+  static const VerificationMeta _senderMeta = const VerificationMeta('sender');
+  @override
+  late final GeneratedColumn<String> sender = GeneratedColumn<String>(
+      'sender', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+      'body', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _receivedAtMeta =
+      const VerificationMeta('receivedAt');
+  @override
+  late final GeneratedColumn<DateTime> receivedAt = GeneratedColumn<DateTime>(
+      'received_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, source, sender, body, receivedAt, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pending_notifications';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<PendingNotification> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('source')) {
+      context.handle(_sourceMeta,
+          source.isAcceptableOrUnknown(data['source']!, _sourceMeta));
+    }
+    if (data.containsKey('sender')) {
+      context.handle(_senderMeta,
+          sender.isAcceptableOrUnknown(data['sender']!, _senderMeta));
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+          _bodyMeta, body.isAcceptableOrUnknown(data['body']!, _bodyMeta));
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('received_at')) {
+      context.handle(
+          _receivedAtMeta,
+          receivedAt.isAcceptableOrUnknown(
+              data['received_at']!, _receivedAtMeta));
+    } else if (isInserting) {
+      context.missing(_receivedAtMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PendingNotification map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PendingNotification(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      source: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}source'])!,
+      sender: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}sender']),
+      body: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}body'])!,
+      receivedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}received_at'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $PendingNotificationsTable createAlias(String alias) {
+    return $PendingNotificationsTable(attachedDatabase, alias);
+  }
+}
+
+class PendingNotification extends DataClass
+    implements Insertable<PendingNotification> {
+  final String id;
+  final String source;
+  final String? sender;
+  final String body;
+  final DateTime receivedAt;
+  final DateTime createdAt;
+  const PendingNotification(
+      {required this.id,
+      required this.source,
+      this.sender,
+      required this.body,
+      required this.receivedAt,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['source'] = Variable<String>(source);
+    if (!nullToAbsent || sender != null) {
+      map['sender'] = Variable<String>(sender);
+    }
+    map['body'] = Variable<String>(body);
+    map['received_at'] = Variable<DateTime>(receivedAt);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  PendingNotificationsCompanion toCompanion(bool nullToAbsent) {
+    return PendingNotificationsCompanion(
+      id: Value(id),
+      source: Value(source),
+      sender:
+          sender == null && nullToAbsent ? const Value.absent() : Value(sender),
+      body: Value(body),
+      receivedAt: Value(receivedAt),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory PendingNotification.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PendingNotification(
+      id: serializer.fromJson<String>(json['id']),
+      source: serializer.fromJson<String>(json['source']),
+      sender: serializer.fromJson<String?>(json['sender']),
+      body: serializer.fromJson<String>(json['body']),
+      receivedAt: serializer.fromJson<DateTime>(json['receivedAt']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'source': serializer.toJson<String>(source),
+      'sender': serializer.toJson<String?>(sender),
+      'body': serializer.toJson<String>(body),
+      'receivedAt': serializer.toJson<DateTime>(receivedAt),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  PendingNotification copyWith(
+          {String? id,
+          String? source,
+          Value<String?> sender = const Value.absent(),
+          String? body,
+          DateTime? receivedAt,
+          DateTime? createdAt}) =>
+      PendingNotification(
+        id: id ?? this.id,
+        source: source ?? this.source,
+        sender: sender.present ? sender.value : this.sender,
+        body: body ?? this.body,
+        receivedAt: receivedAt ?? this.receivedAt,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  PendingNotification copyWithCompanion(PendingNotificationsCompanion data) {
+    return PendingNotification(
+      id: data.id.present ? data.id.value : this.id,
+      source: data.source.present ? data.source.value : this.source,
+      sender: data.sender.present ? data.sender.value : this.sender,
+      body: data.body.present ? data.body.value : this.body,
+      receivedAt:
+          data.receivedAt.present ? data.receivedAt.value : this.receivedAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PendingNotification(')
+          ..write('id: $id, ')
+          ..write('source: $source, ')
+          ..write('sender: $sender, ')
+          ..write('body: $body, ')
+          ..write('receivedAt: $receivedAt, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, source, sender, body, receivedAt, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PendingNotification &&
+          other.id == this.id &&
+          other.source == this.source &&
+          other.sender == this.sender &&
+          other.body == this.body &&
+          other.receivedAt == this.receivedAt &&
+          other.createdAt == this.createdAt);
+}
+
+class PendingNotificationsCompanion
+    extends UpdateCompanion<PendingNotification> {
+  final Value<String> id;
+  final Value<String> source;
+  final Value<String?> sender;
+  final Value<String> body;
+  final Value<DateTime> receivedAt;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const PendingNotificationsCompanion({
+    this.id = const Value.absent(),
+    this.source = const Value.absent(),
+    this.sender = const Value.absent(),
+    this.body = const Value.absent(),
+    this.receivedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PendingNotificationsCompanion.insert({
+    this.id = const Value.absent(),
+    this.source = const Value.absent(),
+    this.sender = const Value.absent(),
+    required String body,
+    required DateTime receivedAt,
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : body = Value(body),
+        receivedAt = Value(receivedAt);
+  static Insertable<PendingNotification> custom({
+    Expression<String>? id,
+    Expression<String>? source,
+    Expression<String>? sender,
+    Expression<String>? body,
+    Expression<DateTime>? receivedAt,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (source != null) 'source': source,
+      if (sender != null) 'sender': sender,
+      if (body != null) 'body': body,
+      if (receivedAt != null) 'received_at': receivedAt,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PendingNotificationsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? source,
+      Value<String?>? sender,
+      Value<String>? body,
+      Value<DateTime>? receivedAt,
+      Value<DateTime>? createdAt,
+      Value<int>? rowid}) {
+    return PendingNotificationsCompanion(
+      id: id ?? this.id,
+      source: source ?? this.source,
+      sender: sender ?? this.sender,
+      body: body ?? this.body,
+      receivedAt: receivedAt ?? this.receivedAt,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
+    if (sender.present) {
+      map['sender'] = Variable<String>(sender.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (receivedAt.present) {
+      map['received_at'] = Variable<DateTime>(receivedAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PendingNotificationsCompanion(')
+          ..write('id: $id, ')
+          ..write('source: $source, ')
+          ..write('sender: $sender, ')
+          ..write('body: $body, ')
+          ..write('receivedAt: $receivedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3235,12 +3582,21 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $BudgetsTable budgets = $BudgetsTable(this);
   late final $GoalsTable goals = $GoalsTable(this);
   late final $DebtsTable debts = $DebtsTable(this);
+  late final $PendingNotificationsTable pendingNotifications =
+      $PendingNotificationsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [accounts, categories, transactions, budgets, goals, debts];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        accounts,
+        categories,
+        transactions,
+        budgets,
+        goals,
+        debts,
+        pendingNotifications
+      ];
 }
 
 typedef $$AccountsTableCreateCompanionBuilder = AccountsCompanion Function({
@@ -5112,6 +5468,200 @@ typedef $$DebtsTableProcessedTableManager = ProcessedTableManager<
     (Debt, BaseReferences<_$AppDatabase, $DebtsTable, Debt>),
     Debt,
     PrefetchHooks Function()>;
+typedef $$PendingNotificationsTableCreateCompanionBuilder
+    = PendingNotificationsCompanion Function({
+  Value<String> id,
+  Value<String> source,
+  Value<String?> sender,
+  required String body,
+  required DateTime receivedAt,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+typedef $$PendingNotificationsTableUpdateCompanionBuilder
+    = PendingNotificationsCompanion Function({
+  Value<String> id,
+  Value<String> source,
+  Value<String?> sender,
+  Value<String> body,
+  Value<DateTime> receivedAt,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+
+class $$PendingNotificationsTableFilterComposer
+    extends Composer<_$AppDatabase, $PendingNotificationsTable> {
+  $$PendingNotificationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get source => $composableBuilder(
+      column: $table.source, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get sender => $composableBuilder(
+      column: $table.sender, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get body => $composableBuilder(
+      column: $table.body, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get receivedAt => $composableBuilder(
+      column: $table.receivedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$PendingNotificationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $PendingNotificationsTable> {
+  $$PendingNotificationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get source => $composableBuilder(
+      column: $table.source, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get sender => $composableBuilder(
+      column: $table.sender, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get body => $composableBuilder(
+      column: $table.body, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get receivedAt => $composableBuilder(
+      column: $table.receivedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$PendingNotificationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PendingNotificationsTable> {
+  $$PendingNotificationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<String> get sender =>
+      $composableBuilder(column: $table.sender, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get receivedAt => $composableBuilder(
+      column: $table.receivedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$PendingNotificationsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $PendingNotificationsTable,
+    PendingNotification,
+    $$PendingNotificationsTableFilterComposer,
+    $$PendingNotificationsTableOrderingComposer,
+    $$PendingNotificationsTableAnnotationComposer,
+    $$PendingNotificationsTableCreateCompanionBuilder,
+    $$PendingNotificationsTableUpdateCompanionBuilder,
+    (
+      PendingNotification,
+      BaseReferences<_$AppDatabase, $PendingNotificationsTable,
+          PendingNotification>
+    ),
+    PendingNotification,
+    PrefetchHooks Function()> {
+  $$PendingNotificationsTableTableManager(
+      _$AppDatabase db, $PendingNotificationsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PendingNotificationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PendingNotificationsTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PendingNotificationsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> source = const Value.absent(),
+            Value<String?> sender = const Value.absent(),
+            Value<String> body = const Value.absent(),
+            Value<DateTime> receivedAt = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PendingNotificationsCompanion(
+            id: id,
+            source: source,
+            sender: sender,
+            body: body,
+            receivedAt: receivedAt,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> source = const Value.absent(),
+            Value<String?> sender = const Value.absent(),
+            required String body,
+            required DateTime receivedAt,
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PendingNotificationsCompanion.insert(
+            id: id,
+            source: source,
+            sender: sender,
+            body: body,
+            receivedAt: receivedAt,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$PendingNotificationsTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $PendingNotificationsTable,
+        PendingNotification,
+        $$PendingNotificationsTableFilterComposer,
+        $$PendingNotificationsTableOrderingComposer,
+        $$PendingNotificationsTableAnnotationComposer,
+        $$PendingNotificationsTableCreateCompanionBuilder,
+        $$PendingNotificationsTableUpdateCompanionBuilder,
+        (
+          PendingNotification,
+          BaseReferences<_$AppDatabase, $PendingNotificationsTable,
+              PendingNotification>
+        ),
+        PendingNotification,
+        PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -5128,4 +5678,6 @@ class $AppDatabaseManager {
       $$GoalsTableTableManager(_db, _db.goals);
   $$DebtsTableTableManager get debts =>
       $$DebtsTableTableManager(_db, _db.debts);
+  $$PendingNotificationsTableTableManager get pendingNotifications =>
+      $$PendingNotificationsTableTableManager(_db, _db.pendingNotifications);
 }

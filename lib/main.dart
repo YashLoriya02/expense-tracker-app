@@ -1,3 +1,4 @@
+import 'package:expense_tracker_ai/features/dashboard/domain/dashboard_providers.dart';
 import 'package:expense_tracker_ai/shared/services/sms_listener_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,16 +9,46 @@ import 'core/services/biometric_lock_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SmsListenerService.initialize();
-
   runApp(const ProviderScope(child: ExpenseTrackerApp()));
 }
 
-class ExpenseTrackerApp extends ConsumerWidget {
+class ExpenseTrackerApp extends ConsumerStatefulWidget {
   const ExpenseTrackerApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ExpenseTrackerApp> createState() => _ExpenseTrackerAppState();
+}
+
+class _ExpenseTrackerAppState extends ConsumerState<ExpenseTrackerApp>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
+
+    Future.microtask(() {
+      final db = ref.read(databaseProvider);
+      SmsListenerService.initialize(db);
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref.invalidate(pendingNotificationCountProvider);
+      ref.invalidate(pendingNotificationsProvider);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
@@ -26,8 +57,12 @@ class ExpenseTrackerApp extends ConsumerWidget {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: themeMode,
-      builder: (context, child) => BiometricGate(child: child ?? const SizedBox.shrink()),
       routerConfig: appRouter,
+      builder: (context, child) {
+        return BiometricGate(
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
   }
 }

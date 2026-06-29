@@ -1,5 +1,6 @@
 import 'package:expense_tracker_ai/features/dashboard/presentation/widgets/budget_overview_strip.dart';
 import 'package:expense_tracker_ai/features/dashboard/presentation/widgets/recent_transactions_list.dart';
+import 'package:expense_tracker_ai/shared/services/sms_listener_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +20,28 @@ class DashboardScreen extends ConsumerWidget {
     final month = DateTime(today.year, today.month, 1);
     final monthTotals = ref.watch(monthlyTotalsProvider(month));
     final recentTxns = ref.watch(recentTransactionsProvider);
+    final pendingCount = ref.watch(pendingNotificationCountProvider);
+
+    ref.listen<AsyncValue<PendingSmsEvent>>(
+      foregroundPendingSmsProvider,
+      (previous, next) {
+        next.whenData((event) {
+          if (!context.mounted) return;
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                  'New transaction SMS added to pending notifications'),
+              behavior: SnackBarBehavior.floating,
+              action: SnackBarAction(
+                label: 'Review',
+                onPressed: () => context.push('/pending-notifications'),
+              ),
+            ),
+          );
+        });
+      },
+    );
 
     return Scaffold(
       body: CustomScrollView(
@@ -41,6 +64,29 @@ class DashboardScreen extends ConsumerWidget {
               IconButton(
                 icon: const Icon(Icons.settings_outlined),
                 onPressed: () => context.push('/settings'),
+              ),
+
+              pendingCount.when(
+                data: (count) => Badge(
+                  isLabelVisible: count > 0,
+                  smallSize: 9,
+                  child: IconButton(
+                    padding: EdgeInsets.all(3),
+                    icon: const Icon(Icons.notifications_none_rounded),
+                    tooltip: 'Pending Notifications',
+                    onPressed: () => context.push('/pending-notifications'),
+                  ),
+                ),
+                loading: () => IconButton(
+                  icon: const Icon(Icons.notifications_none_rounded),
+                  tooltip: 'Pending Notifications',
+                  onPressed: () => context.push('/pending-notifications'),
+                ),
+                error: (_, __) => IconButton(
+                  icon: const Icon(Icons.notifications_none_rounded),
+                  tooltip: 'Pending Notifications',
+                  onPressed: () => context.push('/pending-notifications'),
+                ),
               ),
             ],
           ),

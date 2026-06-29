@@ -110,15 +110,36 @@ class Debts extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+class PendingNotifications extends Table {
+  TextColumn get id => text().clientDefault(() => const Uuid().v4())();
+
+  TextColumn get source => text().withDefault(const Constant('sms'))();
+  TextColumn get sender => text().nullable()();
+  TextColumn get body => text()();
+
+  DateTimeColumn get receivedAt => dateTime()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 // ─── Database ─────────────────────────────────────────────────────────────────
 
-@DriftDatabase(
-    tables: [Accounts, Categories, Transactions, Budgets, Goals, Debts])
+@DriftDatabase(tables: [
+  Accounts,
+  Categories,
+  Transactions,
+  Budgets,
+  Goals,
+  Debts,
+  PendingNotifications,
+])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -128,7 +149,7 @@ class AppDatabase extends _$AppDatabase {
           await _ensureAiInsightCacheTable();
         },
         onUpgrade: (m, from, to) async {
-          if (from < 2) {
+          if (from < 3) {
             await _ensureAiInsightCacheTable();
           }
         },
@@ -438,5 +459,76 @@ class AppDatabase extends _$AppDatabase {
         'savings': income - expense,
       };
     });
+  }
+
+  Stream<List<PendingNotification>> watchPendingNotifications() {
+    return (select(pendingNotifications)
+          ..orderBy([(t) => OrderingTerm.desc(t.receivedAt)]))
+        .watch();
+  }
+
+  Stream<int> watchPendingNotificationCount() {
+    final countExp = pendingNotifications.id.count();
+
+    final query = selectOnly(pendingNotifications)..addColumns([countExp]);
+
+    return query.watchSingle().map((row) => row.read(countExp) ?? 0);
+  }
+
+  Future<void> deletePendingNotification(String id) async {
+    await (delete(pendingNotifications)..where((t) => t.id.equals(id))).go();
+  }
+
+  Future<bool> insertPendingSmsNotification({
+    required String? sender,
+    required String body,
+    required DateTime receivedAt,
+  }) async {
+    final cleanBody = body.trim();
+
+    if (cleanBody.isEmpty) return false;
+
+    if (!_looksLikeCreditDebitSms(cleanBody)) {
+      return false;
+    }
+
+    final existing = await (select(pendingNotifications)
+          ..where(
+            (t) =>
+                t.sender.equalsNullable(sender) &
+                t.body.equals(cleanBody) &
+                t.receivedAt.equals(receivedAt),
+          ))
+        .get();
+
+    if (existing.isNotEmpty) return false;
+
+    await into(pendingNotifications).insert(
+      PendingNotificationsCompanion.insert(
+        sender: Value(sender),
+        body: cleanBody,
+        receivedAt: receivedAt,
+      ),
+    );
+
+    return true;
+  }
+
+  bool _looksLikeCreditDebitSms(String body) {
+    final text = body.toLowerCase();
+
+    final hasMoney = RegExp(
+      r'(₹|rs\.?|inr)\s*[\d,]+(\.\d+)?|[\d,]+(\.\d+)?\s*(₹|rs\.?|inr)',
+    ).hasMatch(text);
+
+    final hasTxnWord = RegExp(
+      r'\b(debit|debited|credit|credited|spent|paid|purchase|withdrawn|received|sent|upi|transaction|txn|account|a/c|acct)\b',
+    ).hasMatch(text);
+
+    final isOtp = RegExp(
+      r'\b(otp|one time password|verification code|login code|password)\b',
+    ).hasMatch(text);
+
+    return hasMoney && hasTxnWord && !isOtp;
   }
 }

@@ -14,11 +14,13 @@ import '../../../../core/services/gemini_service.dart';
 class AddTransactionScreen extends ConsumerStatefulWidget {
   final String initialType;
   final Map<String, dynamic>? prefilled;
+  final String? pendingNotificationId;
 
   const AddTransactionScreen({
     super.key,
     required this.initialType,
     this.prefilled,
+    this.pendingNotificationId,
   });
 
   @override
@@ -159,8 +161,9 @@ Respond ONLY with a valid JSON object. No markdown.
     try {
       final db = ref.read(databaseProvider);
       final accounts = await db.select(db.accounts).get();
-      if (accounts.isEmpty)
+      if (accounts.isEmpty) {
         throw Exception('No account found. Create an account first.');
+      }
 
       final accountId = _selectedAccountId ??
           accounts
@@ -194,6 +197,10 @@ Respond ONLY with a valid JSON object. No markdown.
               .write(
             AccountsCompanion(balance: Value(account.balance + delta)),
           );
+        }
+
+        if (widget.pendingNotificationId != null) {
+          await db.deletePendingNotification(widget.pendingNotificationId!);
         }
       });
 

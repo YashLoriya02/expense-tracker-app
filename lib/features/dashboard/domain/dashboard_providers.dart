@@ -1,4 +1,5 @@
 import 'package:expense_tracker_ai/features/transactions/domain/transaction_range_filter.dart';
+import 'package:expense_tracker_ai/shared/services/sms_listener_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/database/app_database.dart';
 
@@ -65,3 +66,16 @@ final transactionsByRangeProvider =
         );
   },
 );
+
+final pendingNotificationsProvider =
+    StreamProvider<List<PendingNotification>>((ref) {
+  return ref.watch(databaseProvider).watchPendingNotifications();
+});
+
+final pendingNotificationCountProvider = StreamProvider<int>((ref) {
+  return ref.watch(databaseProvider).watchPendingNotificationCount();
+});
+
+final foregroundPendingSmsProvider = StreamProvider<PendingSmsEvent>((ref) {
+  return SmsListenerService.foregroundPendingSmsStream;
+});
