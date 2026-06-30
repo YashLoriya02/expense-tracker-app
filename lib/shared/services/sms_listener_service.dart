@@ -196,6 +196,13 @@ class SmsListenerService {
     final sender = message.address;
     final body = message.body ?? '';
 
+    debugPrint("====================================");
+    debugPrint("Sender : ${message.address}");
+    debugPrint(
+        "Date   : ${DateTime.fromMillisecondsSinceEpoch(message.date ?? 0)}");
+    debugPrint("Body   : ${message.body}");
+    debugPrint("====================================");
+
     final receivedAt = DateTime.fromMillisecondsSinceEpoch(
       message.date ?? DateTime.now().millisecondsSinceEpoch,
     );

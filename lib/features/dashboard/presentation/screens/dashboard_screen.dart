@@ -165,7 +165,7 @@ class DashboardScreen extends ConsumerWidget {
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w700)),
                     TextButton(
-                      onPressed: () => context.go('/goals'),
+                      onPressed: () => context.go('/transactions'),
                       child: const Text('See all'),
                     ),
                   ],
